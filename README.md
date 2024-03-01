@@ -11,8 +11,9 @@ Alternatively download the desired precompiles here https://github.com/ggerganov
 For Windows, install Visual studio and compile the desired libraries manually beforehand.
 I recommend to only compile GPU support (CUBLAS: CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python)
 in if you can fit a significant amount of the model into VRAM. Otherwise just install with pip install llama-cpp-python.
-For reference, I have a 3080 with 10 GB VRAM and an AMD Ryzen 5600X. I see almost no performance improvement when
-outsorcing 5 LLM layers to the GPU with a 40 GB Mixtral Model. It is only relevant to me when using 7B LLama models.
+For reference, I have a 3080 with 10 GB VRAM and an AMD Ryzen 5600X. I see no performance improvement on output tokens when
+outsorcing 5 LLM layers to the GPU with a 40 GB Mixtral Model and some speedup on chrunching the input prompt/tokens.
+It is only relevant to me when using 7B LLama models.
 
 ## Download the LLMs
 You can use any LLM that is instruct trained as long as you provide it's template and add the appropriate class in llm.py
