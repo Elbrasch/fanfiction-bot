@@ -1,0 +1,4 @@
+llama-cpp-python
+pydantic_settings
+jsonpickle
+confz
