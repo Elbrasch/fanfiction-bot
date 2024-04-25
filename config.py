@@ -3,6 +3,7 @@ from typing import Optional
 
 class Config(BaseConfig):
     model_path_mixtral: str
+    model_path_mixtral_large: str
     model_path_noromaid1: str
     model_path_noromaid4: str
     template_prompt_mixtral:str

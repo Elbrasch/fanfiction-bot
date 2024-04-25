@@ -30,26 +30,26 @@ if __name__ == "__main__":
     if story.world is None:
         logging.info("generating world")
         story.world = chat(f"The story features the main characters ({story.main_character}). The main plot will be {story.main_plot}.\nThe subplot is {story.sub_plot}\n" +
-                            f"Describe the world (Geography, History, Political System, Magic system) the story is set in a few words.")
+                            f"Describe the world (Geography, History, Political System, Magic system) the story is set in. Include details necessary for writing a story in it later.")
         story.world = question(story.world, [])
         story.save()
     if story.appearance is None:
         logging.info("generating appearance")
-        story.appearance =chat(f"Come up with a short description and appearance of the main character(s).")
+        story.appearance =chat(f"Come up with a description and appearance of the main character(s).")
         story.appearance =question(story.appearance, [story.world])
         story.save()
     if story.characters is None:
         logging.info("generating characters")
-        story.characters = chat(f"List up to 5 other characters that appear in the story. Main Attributes are name, age, look, role in the story, relationship to the main character(s) and personality. Keep the description short. Generate names for all characters!")
+        story.characters = chat(f"List up to 5 other characters that appear in the story. Main Points to mention are name, age, look, role in the story, relationship to the main character(s) and personality. Give all characters names!")
         story.characters = question(story.characters, [story.world, story.appearance])
         story.save()
     if story.outline is None:
         logging.info("generating outline")
-        story.outline = chat(f"I need a chapter breakdown for the story. Include theme, purpose of the chapter and a detailed chapter summary. Return as a json list.")
+        story.outline = chat('I need a chapter breakdown for the story. Include theme, purpose of the chapter and a detailed chapter summary. Return as a json list: [{chapter 1 details}, {chapter 2 details},...].')
         story.outline = question(story.outline, [story.world,  story.appearance, story.characters], as_json=True)
         chapters = json.loads(story.outline.response)
         while True:
-            cont = chat("Is the chapter list finished? Answer with only Yes or No.")
+            cont = chat("Does this chapter list cover all the story points? Answer with only Yes or No.")
             cont = question(cont, [story.world, story.appearance, story.characters, story.outline])
             if cont.response[:3].lower() == "yes":
                 break
@@ -63,8 +63,6 @@ if __name__ == "__main__":
     chapters = json.loads(story.outline.response)
     previous_notes = ""
     story_file = f"{story.name}.txt"
-    if os.path.exists(story_file):
-        os.remove(story_file)    
     if len(story.scenes) == 0:
         last_scenes = ""
         for i, chapter in enumerate(chapters):

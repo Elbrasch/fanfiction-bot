@@ -61,11 +61,37 @@ class Mixtral(Model):
     def stream(self, prompt, llm_params):
         return self.model(prompt, # Prompt
             max_tokens=32768,  # Generate up to 512 tokens
-            stop=["</s>"],   # Example stop token - not necessarily correct for this specific model! Please check before using.
+            stop=["</s>", "[/INST]", "[INST]"],   # Example stop token - not necessarily correct for this specific model! Please check before using.
             echo=True,        # Whether to echo the prompt
             stream=True,
             **llm_params)
     
+class MixtralLarge(Model):
+    def __init__(self) -> None:
+        super().__init__(Config().template_prompt_mixtral)
+        self.model = Llama(
+            model_path=Config().model_path_mixtral_large,  # Download the model file first
+            n_ctx= 65536,
+            n_threads=10,            # The number of CPU threads to use, tailor to your system and the resulting performance
+            )
+
+    def question_prompt(self, question:str) -> str:
+        res = super().question_prompt(question).replace("</s>", "")
+        return res
+    
+    def stream(self, prompt, llm_params):
+        return self.model(prompt, # Prompt
+            max_tokens=65536,  # Generate up to 512 tokens
+            stop=["</s>", "[/INST]", "[INST]"],   # Example stop token - not necessarily correct for this specific model! Please check before using.
+            echo=True,        # Whether to echo the prompt
+            stream=True,
+            **llm_params)
+
+    def system_prompt(self, system:str) -> str:
+        system_add = 'This is a transcript between a Human and an AI Assistant. The humans part is contained in "<s>[INST]{question}[/INST]". The AIs answer follows as "{answer}</s>".\n\n'
+        return system_add + self._prompt(question=system, result="Ok, I will act in accordance of this instruction.")
+
+
 class Noromaid1(Model):
     def __init__(self) -> None:
         super().__init__(Config().template_prompt_noromaid1)
@@ -135,6 +161,8 @@ def load_model():
         return Noromaid1()
     elif selected == "noromaid4":
         return Noromaid4()
+    elif selected == "mixtrallarge":
+        return MixtralLarge()
     raise NotImplementedError(f"don't know {selected}")
 
 
@@ -190,3 +218,5 @@ def question(question:chat, context:list[chat], as_json:bool = False, temperatur
     question.response = result
     return question
 
+if __name__ == "__main__":
+    _question("", {})    
